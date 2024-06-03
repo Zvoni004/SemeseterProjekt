@@ -13,10 +13,46 @@
 Die ChatApp basiert auf einem Spring Boot-Server mit einer MongoDB-Datenbank zur Speicherung von Nachrichten, Benutzern und Mediendaten (Images, Audios). Die Anwendung verwendet RESTful APIs für die Kommunikation und ermöglicht WebSocket-Verbindungen für Echtzeit-Messaging. Der Client ist eine WPF-Anwendung, welche die Benutzeroberfläche für die Interaktion mit dem Server bereitstellt.
 
 ```mermaid
-graph TD
-    A[Client] -->|HTTP/HTTPS| B[ChatAppServer]
-    B -->|REST API| C[MongoDB]
-    B -->|WebSocket| A
+graph TD;
+    subgraph Server
+        A[ChatAppServerApplication]
+        A -->|Verarbeitet| B[ChatService]
+        A -->|Verarbeitet| C[UserService]
+        A -->|Verarbeitet| D[MessageServer]
+        
+        B -->|Verwendet| E[ChatMessageRepository]
+        B -->|Verwendet| F[ChatMessage]
+        
+        C -->|Verwendet| G[UserRepository]
+        C -->|Verwendet| H[User]
+        
+        D -->|Verarbeitet| I[AudioDataRepository]
+        D -->|Verarbeitet| J[ImageDataRepository]
+        D -->|Verarbeitet| K[SimpMessagingTemplate]
+        D -->|Verarbeitet| L[ChatService]
+        D -->|Verarbeitet| M[UserService]
+        
+        I -->|Speichert| N[AudioData]
+        J -->|Speichert| O[ImageData]
+    end
+
+    subgraph MongoDB
+        P[(MongoDB-Datenbank)]
+    end
+
+    subgraph WPF_Client
+        Q[MainWindow]
+        Q -->|Verarbeitet| R[ClientWebSocket]
+        Q -->|Verarbeitet| S[HttpClient]
+        Q -->|Verarbeitet| T[Message]
+        Q -->|Verarbeitet| U[ImageData]
+        Q -->|Verarbeitet| V[AudioData]
+        Q -->|Verarbeitet| W[RegisterPage]
+    end
+
+    A -->|Speichert/Abruft Daten von| P
+    Q -->|Kommuniziert mit| A
+
 ```
 
 ## Beschreibung der Software
