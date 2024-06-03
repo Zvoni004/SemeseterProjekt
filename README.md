@@ -8,7 +8,7 @@
 5. [Diagramme](#diagramme)
 6. [Diskussion der Ergebnisse](#diskussion-der-ergebnisse)
 
-## Softwar-Architektur
+## Software-Architektur
 Die ChatApp basiert auf einem Spring Boot-Server mit einer MongoDB-Datenbank zur Speicherung von Nachrichten, Benutzern und Mediendaten (Images, Audios). Die Anwendung verwendet RESTful APIs für die Kommunikation und ermöglicht WebSocket-Verbindungen für Echtzeit-Messaging. Der Client ist eine WPF-Anwendung, welche die Benutzeroberfläche für die Interaktion mit dem Server bereitstellt.
 
 ```mermaid
