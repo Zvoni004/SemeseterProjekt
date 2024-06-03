@@ -301,38 +301,213 @@ graph TD
     WPFClient -->|login| ChatAppServer
 ```
 
-### Klassen-Diagramm
+### Klassen-Diagramm Server
 ```mermaid
 classDiagram
-    class ChatMessage {
-        +int id
-        +String message
-        +String sender
-        +Date timestamp
-    }
-    class ImageData {
-        +String id
-        +byte[] data
-        +String sender
-        +Date timestamp
-    }
     class AudioData {
         +String id
         +byte[] data
         +String sender
         +Date timestamp
+        +getId()
+        +setId(String id)
+        +getData()
+        +setData(byte[] data)
+        +getSender()
+        +setSender(String sender)
+        +getTimestamp()
+        +setTimestamp(Date timestamp)
     }
+
+    class ChatMessage {
+        +int id
+        +String message
+        +String sender
+        +Date timestamp
+        +getId()
+        +setId(int id)
+        +getMessage()
+        +setMessage(String message)
+        +getSender()
+        +setSender(String sender)
+        +getTimestamp()
+        +setTimestamp(Date timestamp)
+    }
+
+    class ImageData {
+        +String id
+        +byte[] data
+        +String sender
+        +Date timestamp
+        +getId()
+        +setId(String id)
+        +getData()
+        +setData(byte[] data)
+        +getSender()
+        +setSender(String sender)
+        +getTimestamp()
+        +setTimestamp(Date timestamp)
+    }
+
     class User {
+        +String id
         +String username
         +String password
+        +getId()
+        +setId(String id)
+        +getUsername()
+        +setUsername(String username)
+        +getPassword()
+        +setPassword(String password)
     }
-    ChatMessageController --> ChatService
-    ImageData --> ChatService
-    AudioData --> ChatService
-    User --> UserService
-    WPFClient --> ChatAppServer
-```
 
+    class AudioDataRepository {
+        <<interface>>
+        +save(AudioData audioData)
+        +findById(String id)
+        +findAll()
+        +deleteById(String id)
+    }
+
+    class ChatMessageRepository {
+        <<interface>>
+        +save(ChatMessage chatMessage)
+        +findById(int id)
+        +findAll()
+        +deleteById(int id)
+    }
+
+    class ImageDataRepository {
+        <<interface>>
+        +save(ImageData imageData)
+        +findById(String id)
+        +findAll()
+        +deleteById(String id)
+    }
+
+    class UserRepository {
+        <<interface>>
+        +save(User user)
+        +findById(String id)
+        +findAll()
+        +deleteById(String id)
+        +findByUsername(String username)
+    }
+
+    class ChatService {
+        -ChatMessageRepository chatMessageRepository
+        +getAllMessages()
+        +saveMessage(ChatMessage chatMessage)
+        +getMessageById(int id)
+        +updateMessage(int id, ChatMessage chatMessage)
+        +deleteMessage(int id)
+        +getLastMessage()
+    }
+
+    class UserService {
+        -UserRepository userRepository
+        +saveUser(User user)
+        +getUserByUsername(String username)
+        +validateUser(String username, String password)
+    }
+
+    class ChatMessageController {
+        -ChatService chatService
+        +getAllMessages()
+        +createMessage(ChatMessage chatMessage)
+        +getMessageById(String id)
+        +updateMessage(String id, ChatMessage chatMessage)
+        +deleteMessage(String id)
+    }
+
+    class MessageServer {
+        -ChatMessageRepository chatMessageRepository
+        -AudioDataRepository audioDataRepository
+        -ImageDataRepository imageDataRepository
+        -UserRepository userRepository
+        -UserService userService
+        -ChatService chatService
+        -SimpMessagingTemplate messagingTemplate
+        +receiveMessage(ChatMessage message)
+        +getMessages()
+        +receiveAudio(AudioDataRequest audioDataRequest)
+        +receiveImage(ImageDataRequest imageDataRequest)
+        +registerUser(User user)
+        +loginUser(Map<String, String> user)
+    }
+
+    AudioDataRepository <|-- AudioData
+    ChatMessageRepository <|-- ChatMessage
+    ImageDataRepository <|-- ImageData
+    UserRepository <|-- User
+
+    ChatService --> ChatMessageRepository
+    UserService --> UserRepository
+
+    ChatMessageController --> ChatService
+    MessageServer --> ChatMessageRepository
+    MessageServer --> AudioDataRepository
+    MessageServer --> ImageDataRepository
+    MessageServer --> UserRepository
+    MessageServer --> UserService
+    MessageServer --> ChatService
+    MessageServer --> SimpMessagingTemplate
+
+```
+### Klassen-Diagramm WPF-Client
+```mermaid
+classDiagram
+    class MainWindow {
+        -ClientWebSocket _clientWebSocket
+        -string _username
+        -string _password
+        -bool _isConnected
+        -List<int> _sentMessageIds
+        +MainWindow()
+        +void Connect_Click(object sender, RoutedEventArgs e)
+        +void OpenRegisterPage_Click(object sender, RoutedEventArgs e)
+        +void Send_Click(object sender, RoutedEventArgs e)
+        +void SendAudio_Click(object sender, RoutedEventArgs e)
+        +void SendImage_Click(object sender, RoutedEventArgs e)
+        +void PlayAudio_Click(object sender, RoutedEventArgs e)
+        ~void StartPollingTasks()
+        ~Task ConnectWebSocket()
+        ~Task SendMessageAsync(object message)
+        ~Task SendAudioAsync(object audioMessage)
+        ~Task SendImageAsync(object imageMessage)
+        ~Task ReceiveMessages()
+        ~Task ReceiveImages()
+        ~Task ReceiveAudios()
+    }
+
+    class RegisterPage {
+        +RegisterPage()
+        +void Register_Click(object sender, RoutedEventArgs e)
+    }
+
+    class Message {
+        +string MessageContent
+        +string Sender
+        +DateTime Timestamp
+        +int Id
+    }
+
+    class ImageData {
+        +string Data
+        +string Sender
+    }
+
+    class AudioData {
+        +string Data
+        +string Sender
+    }
+
+    MainWindow "1" --> "1" RegisterPage : Uses
+    MainWindow "1" --> "1..*" Message : Manages
+    MainWindow "1" --> "1..*" ImageData : Manages
+    MainWindow "1" --> "1..*" AudioData : Manages
+
+```
 ## Diskussion der Ergebnisse
 ### Zusammenfassung
 Der ChatAppServer bietet eine robuste Plattform für Echtzeit-Kommunikation durch die Verwendung von Spring Boot und MongoDB. Die Integration von WebSockets ermöglicht eine schnelle und effiziente Nachrichtenübertragung, während die RESTful APIs eine einfache Interaktion mit dem Backend gewährleisten. Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion mit dem Server.
