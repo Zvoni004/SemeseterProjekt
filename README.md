@@ -47,53 +47,78 @@ Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion 
 ## Verwendung der API
 ### Nachrichten abrufen
 ```java
-@GetMapping("/api/messages")
-public List<ChatMessage> getAllMessages() {
-    return chatService.getAllMessages();
-}
+@GetMapping
+    public List<ChatMessage> getAllMessages() {
+        return chatService.getAllMessages();
+    }
 ```
 ### Nachricht erstellen
 ```java
-@PostMapping("/api/messages")
-public ChatMessage createMessage(@RequestBody ChatMessage chatMessage) {
-    return chatService.saveMessage(chatMessage);
-}
+@PostMapping
+    public ChatMessage createMessage(@RequestBody ChatMessage chatMessage) {
+        return chatService.saveMessage(chatMessage);
+    }
 ```
 ### Nachricht nach ID abrufen
 ```java
-@GetMapping("/api/messages/{id}")
-public Optional<ChatMessage> getMessageById(@PathVariable String id) {
-    return chatService.getMessageById(Integer.parseInt(id));
-}
+@GetMapping("/{id}")
+    public Optional<ChatMessage> getMessageById(@PathVariable String id) {
+        return chatService.getMessageById(Integer.parseInt(id));
+    }
 ```
 ### Nachricht aktualisieren
 ```java
-@PutMapping("/api/messages/{id}")
-public ChatMessage updateMessage(@PathVariable String id, @RequestBody ChatMessage chatMessage) {
-    return chatService.updateMessage(Integer.parseInt(id), chatMessage);
-}
+@PutMapping("/{id}")
+    public ChatMessage updateMessage(@PathVariable String id, @RequestBody ChatMessage chatMessage) {
+        return chatService.updateMessage(Integer.parseInt(id), chatMessage);
+    }
 ```
 ### Nachricht löschen
 ```java
-@DeleteMapping("/api/messages/{id}")
-public boolean deleteMessage(@PathVariable String id) {
-    return chatService.deleteMessage(Integer.parseInt(id));
-}
+@DeleteMapping("/{id}")
+    public boolean deleteMessage(@PathVariable String id) {
+        return chatService.deleteMessage(Integer.parseInt(id));
+    }
 ```
 ### Nachricht über WebSocket senden
 ```java
 @PostMapping("/sendMessage")
-public void sendMessage(@RequestBody ChatMessage chatMessage) {
-    messagingTemplate.convertAndSend("/topic/messages", chatMessage);
-}
+    @SendTo("/topic/messages")
+    public ResponseEntity<String> receiveMessage(@RequestBody ChatMessage message) {
+        try {
+            // Debugging logs
+            System.out.println("Received message content: " + message.getMessage());
+            System.out.println("Sender: " + message.getSender());
+            // Set the new ID for the message
+            ChatMessage lastMessage = chatService.getLastMessage();
+            if (lastMessage != null) {
+                message.setId(lastMessage.getId() + 1);
+            } else {
+                message.setId(1);
+            }
+
+            message.setTimestamp(new Date()); 
+
+
+            chatService.saveMessage(message);
+            messagingTemplate.convertAndSend("/topic/messages", message);
+            return ResponseEntity.ok("Message received successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send message: " + e.getMessage());
+        }
+    }
 ```
-### Abrufen aller Nachrichten über WebSocket-Thema
+### Abrufen der letzten Nachricht über WebSocket-Thema
 ```java
-@MessageMapping("/messages")
-@SendTo("/topic/messages")
-public List<ChatMessage> getAllMessagesTopic() {
-    return chatService.getAllMessages();
-}
+@GetMapping("/topic/messages")
+    public ResponseEntity<ChatMessage> getMessages() {
+        try {
+            ChatMessage message = chatService.getLastMessage();
+            return ResponseEntity.ok(message);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
 ```
 
 ## Kommunikation des WPF-Client mit dem Server
@@ -220,16 +245,11 @@ private async Task ReceiveMessages()
 ### Use-Case-Diagramm
 ```mermaid
 graph TD
-    User -->|sendMessage| ChatAppServer
-    User -->|sendImage| ChatAppServer
-    User -->|sendAudio| ChatAppServer
-    User -->|register| ChatAppServer
-    User -->|login| ChatAppServer
-    User -->|sendMessage| WPFClient
-    User -->|sendImage| WPFClient
-    User -->|sendAudio| WPFClient
-    User -->|register| WPFClient
-    User -->|login| WPFClient
+    WPFClient -->|sendMessage| ChatAppServer
+    WPFClient -->|sendImage| ChatAppServer
+    WPFClient -->|sendAudio| ChatAppServer
+    WPFClient -->|register| ChatAppServer
+    WPFClient -->|login| ChatAppServer
 ```
 
 ### Klassen-Diagramm
