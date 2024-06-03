@@ -24,55 +24,6 @@ Diese ChatApp Anwendung ermöglicht Benutzern Nachrichten in Echtzeit zu senden 
 
 Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion mit dem Server, einschließlich der Anzeige von Nachrichten, dem Senden von Textnachrichten, Bildern und Audiodateien sowie der Benutzerverwaltung. Wenn man den Client startet sieht man zuerst das Login Fenster mit der möglichkeit sich einzuloggen oder den Button für die Registrierung anzuklicken, erst wenn man sich angemeldet hat gelangt man in den eigentlichen Chat wo man die schon vorher genannten funktionen verwenden kann.
 
-## Aktivitätsdiagramm WPF-Client
-```mermaid
-graph TD;
-    Start[Start] --> LoginPage[LoginPage anzeigen];
-    LoginPage --> UserInput[Eingabe von Benutzername und Passwort];
-    UserInput --> LoginButton[Klicken auf den Anmeldebutton];
-    LoginButton --> ValidateInputs[Benutzereingaben überprüfen];
-    ValidateInputs --> |Fehler| ShowErrorMessage[Fehlermeldung anzeigen];
-    ValidateInputs --> |Erfolg| HideLoginPage[LoginPage ausblenden];
-    HideLoginPage --> ShowChatPage[Chatseite anzeigen];
-    ShowChatPage --> ConnectWebSocket[WebSocket-Verbindung herstellen];
-    ConnectWebSocket --> SendMessageAsync[Anfangsnachricht senden];
-    SendMessageAsync --> ReceiveMessages[Nachrichten empfangen];
-    SendMessageAsync --> ReceiveImages[Bilder empfangen];
-    SendMessageAsync --> ReceiveAudios[Audios empfangen];
-    ShowChatPage --> SendButton[Klicken auf den Senden-Button];
-    SendButton --> SendMessageAsync[Nachricht senden];
-    ShowChatPage --> SendImageButton[Klicken auf den Bilder senden-Button];
-    SendImageButton --> SelectImage[Auswahl eines Bildes];
-    SelectImage --> SendImageAsync[Bild senden];
-    ShowChatPage --> SendAudioButton[Klicken auf den Audios senden-Button];
-    SendAudioButton --> SelectAudio[Auswahl einer Audiodatei];
-    SelectAudio --> SendAudioAsync[Audio senden];
-    ShowChatPage --> CloseWindow[Schließen des Fensters];
-    CloseWindow --> Terminate[Terminieren];
-```
-## Aktivitätsdiagramm Server
-```mermaid
-graph TD;
-    Start((Start)) --> NachrichtEmpfangen[Nachricht empfangen];
-    NachrichtEmpfangen --> NachrichtSpeichern[Nachricht speichern];
-    NachrichtSpeichern --> NachrichtSenden[Nachricht senden];
-    Start --> AudioEmpfangen[Audio empfangen];
-    AudioEmpfangen --> AudioSpeichern[Audio speichern];
-    AudioSpeichern --> AudioSenden[Audio senden];
-    Start --> BildEmpfangen[Bild empfangen];
-    BildEmpfangen --> BildSpeichern[Bild speichern];
-    BildSpeichern --> BildSenden[Bild senden];
-    Start --> BenutzerRegistrieren[Benutzer registrieren];
-    BenutzerRegistrieren --> BenutzerSpeichern[Benutzer speichern];
-    Start --> BenutzerAnmelden[Benutzer anmelden];
-    BenutzerAnmelden --> BenutzerValidieren[Benutzer validieren];
-    NachrichtSenden --> Ende((Ende));
-    AudioSenden --> Ende;
-    BildSenden --> Ende;
-    BenutzerSpeichern --> Ende;
-    BenutzerValidieren --> Ende;
-
-```
 ## API-Beschreibung
 ### Nachrichten
 * **GET /api/messages**: Abrufen aller Nachrichten (alle "/api/..." wurden durch POSTMAN getestet)
@@ -291,6 +242,55 @@ private async Task ReceiveMessages()
 ```
 
 ## Diagramme
+## Aktivitätsdiagramm WPF-Client
+```mermaid
+graph TD;
+    Start[Start] --> LoginPage[LoginPage anzeigen];
+    LoginPage --> UserInput[Eingabe von Benutzername und Passwort];
+    UserInput --> LoginButton[Klicken auf den Anmeldebutton];
+    LoginButton --> ValidateInputs[Benutzereingaben überprüfen];
+    ValidateInputs --> |Fehler| ShowErrorMessage[Fehlermeldung anzeigen];
+    ValidateInputs --> |Erfolg| HideLoginPage[LoginPage ausblenden];
+    HideLoginPage --> ShowChatPage[Chatseite anzeigen];
+    ShowChatPage --> ConnectWebSocket[WebSocket-Verbindung herstellen];
+    ConnectWebSocket --> SendMessageAsync[Anfangsnachricht senden];
+    SendMessageAsync --> ReceiveMessages[Nachrichten empfangen];
+    SendMessageAsync --> ReceiveImages[Bilder empfangen];
+    SendMessageAsync --> ReceiveAudios[Audios empfangen];
+    ShowChatPage --> SendButton[Klicken auf den Senden-Button];
+    SendButton --> SendMessageAsync[Nachricht senden];
+    ShowChatPage --> SendImageButton[Klicken auf den Bilder senden-Button];
+    SendImageButton --> SelectImage[Auswahl eines Bildes];
+    SelectImage --> SendImageAsync[Bild senden];
+    ShowChatPage --> SendAudioButton[Klicken auf den Audios senden-Button];
+    SendAudioButton --> SelectAudio[Auswahl einer Audiodatei];
+    SelectAudio --> SendAudioAsync[Audio senden];
+    ShowChatPage --> CloseWindow[Schließen des Fensters];
+    CloseWindow --> Terminate[Terminieren];
+```
+## Aktivitätsdiagramm Server
+```mermaid
+graph TD;
+    Start((Start)) --> NachrichtEmpfangen[Nachricht empfangen];
+    NachrichtEmpfangen --> NachrichtSpeichern[Nachricht speichern];
+    NachrichtSpeichern --> NachrichtSenden[Nachricht senden];
+    Start --> AudioEmpfangen[Audio empfangen];
+    AudioEmpfangen --> AudioSpeichern[Audio speichern];
+    AudioSpeichern --> AudioSenden[Audio senden];
+    Start --> BildEmpfangen[Bild empfangen];
+    BildEmpfangen --> BildSpeichern[Bild speichern];
+    BildSpeichern --> BildSenden[Bild senden];
+    Start --> BenutzerRegistrieren[Benutzer registrieren];
+    BenutzerRegistrieren --> BenutzerSpeichern[Benutzer speichern];
+    Start --> BenutzerAnmelden[Benutzer anmelden];
+    BenutzerAnmelden --> BenutzerValidieren[Benutzer validieren];
+    NachrichtSenden --> Ende((Ende));
+    AudioSenden --> Ende;
+    BildSenden --> Ende;
+    BenutzerSpeichern --> Ende;
+    BenutzerValidieren --> Ende;
+
+```
 ### Use-Case-Diagramm
 ```mermaid
 graph TD
