@@ -49,6 +49,28 @@ graph TD;
     SelectAudio --> SendAudioAsync[Audio senden];
     ShowChatPage --> CloseWindow[Schließen des Fensters];
     CloseWindow --> Terminate[Terminieren];
+```
+## Aktivitätsdiagramm Server
+```mermaid
+graph TD;
+    Start((Start)) --> NachrichtEmpfangen[Nachricht empfangen];
+    NachrichtEmpfangen --> NachrichtSpeichern[Nachricht speichern];
+    NachrichtSpeichern --> NachrichtSenden[Nachricht senden];
+    Start --> AudioEmpfangen[Audio empfangen];
+    AudioEmpfangen --> AudioSpeichern[Audio speichern];
+    AudioSpeichern --> AudioSenden[Audio senden];
+    Start --> BildEmpfangen[Bild empfangen];
+    BildEmpfangen --> BildSpeichern[Bild speichern];
+    BildSpeichern --> BildSenden[Bild senden];
+    Start --> BenutzerRegistrieren[Benutzer registrieren];
+    BenutzerRegistrieren --> BenutzerSpeichern[Benutzer speichern];
+    Start --> BenutzerAnmelden[Benutzer anmelden];
+    BenutzerAnmelden --> BenutzerValidieren[Benutzer validieren];
+    NachrichtSenden --> Ende((Ende));
+    AudioSenden --> Ende;
+    BildSenden --> Ende;
+    BenutzerSpeichern --> Ende;
+    BenutzerValidieren --> Ende;
 
 ```
 ## API-Beschreibung
