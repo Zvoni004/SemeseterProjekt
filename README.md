@@ -26,28 +26,30 @@ Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion 
 
 ## Aktivitätsdiagramm Chat
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffcc00', 'primaryTextColor': '#000000', 'primaryBorderColor': '#ffcc00', 'lineColor': '#ffcc00' }}}%%
-stateDiagram
-    [*] --> UserLogin
-    UserLogin --> LoginValidation
-    LoginValidation --> UserConnected : Success
-    LoginValidation --> [*] : Failure
+graph TD;
+    Start[Start] --> LoginPage[LoginPage anzeigen];
+    LoginPage --> UserInput[Eingabe von Benutzername und Passwort];
+    UserInput --> LoginButton[Klicken auf den Anmeldebutton];
+    LoginButton --> ValidateInputs[Benutzereingaben überprüfen];
+    ValidateInputs --> |Fehler| ShowErrorMessage[Fehlermeldung anzeigen];
+    ValidateInputs --> |Erfolg| HideLoginPage[LoginPage ausblenden];
+    HideLoginPage --> ShowChatPage[Chatseite anzeigen];
+    ShowChatPage --> ConnectWebSocket[WebSocket-Verbindung herstellen];
+    ConnectWebSocket --> SendMessageAsync[Anfangsnachricht senden];
+    SendMessageAsync --> ReceiveMessages[Nachrichten empfangen];
+    SendMessageAsync --> ReceiveImages[Bilder empfangen];
+    SendMessageAsync --> ReceiveAudios[Audios empfangen];
+    ShowChatPage --> SendButton[Klicken auf den Senden-Button];
+    SendButton --> SendMessageAsync[Nachricht senden];
+    ShowChatPage --> SendImageButton[Klicken auf den Bilder senden-Button];
+    SendImageButton --> SelectImage[Auswahl eines Bildes];
+    SelectImage --> SendImageAsync[Bild senden];
+    ShowChatPage --> SendAudioButton[Klicken auf den Audios senden-Button];
+    SendAudioButton --> SelectAudio[Auswahl einer Audiodatei];
+    SelectAudio --> SendAudioAsync[Audio senden];
+    ShowChatPage --> CloseWindow[Schließen des Fensters];
+    CloseWindow --> Terminate[Terminieren];
 
-    state UserConnected {
-        [*] --> Idle
-        Idle --> SendMessage : User sends message
-        Idle --> ReceiveMessage : New message received
-
-        SendMessage --> SendingMessage
-        SendingMessage --> SendMessageSuccess : Message sent successfully
-        SendMessageSuccess --> [*] : Done
-
-        SendMessage --> SendMessageFailure : Error
-        SendMessageFailure --> [*] : Retry/Cancel
-
-        ReceiveMessage --> DisplayMessage : Show new message
-        DisplayMessage --> [*] : Done
-    }
 ```
 ## API-Beschreibung
 ### Nachrichten
