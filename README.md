@@ -24,6 +24,31 @@ Diese ChatApp Anwendung ermöglicht Benutzern Nachrichten in Echtzeit zu senden 
 
 Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion mit dem Server, einschließlich der Anzeige von Nachrichten, dem Senden von Textnachrichten, Bildern und Audiodateien sowie der Benutzerverwaltung. Wenn man den Client startet sieht man zuerst das Login Fenster mit der möglichkeit sich einzuloggen oder den Button für die Registrierung anzuklicken, erst wenn man sich angemeldet hat gelangt man in den eigentlichen Chat wo man die schon vorher genannten funktionen verwenden kann.
 
+##Aktivitätsdiagramm
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#ffcc00', 'primaryTextColor': '#000000', 'primaryBorderColor': '#ffcc00', 'lineColor': '#ffcc00' }}}%%
+stateDiagram
+    [*] --> UserLogin
+    UserLogin --> LoginValidation
+    LoginValidation --> UserConnected : Success
+    LoginValidation --> [*] : Failure
+
+    state UserConnected {
+        [*] --> Idle
+        Idle --> SendMessage : User sends message
+        Idle --> ReceiveMessage : New message received
+
+        SendMessage --> SendingMessage
+        SendingMessage --> SendMessageSuccess : Message sent successfully
+        SendMessageSuccess --> [*] : Done
+
+        SendMessage --> SendMessageFailure : Error
+        SendMessageFailure --> [*] : Retry/Cancel
+
+        ReceiveMessage --> DisplayMessage : Show new message
+        DisplayMessage --> [*] : Done
+    }
+```
 ## API-Beschreibung
 ### Nachrichten
 * **GET /api/messages**: Abrufen aller Nachrichten (alle "/api/..." wurden durch POSTMAN getestet)
