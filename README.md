@@ -242,7 +242,7 @@ private async Task ReceiveMessages()
 ```
 
 ## Diagramme
-## Aktivitätsdiagramm WPF-Client
+### Aktivitätsdiagramm WPF-Client
 ```mermaid
 graph TD;
     Start[Start] --> LoginPage[LoginPage anzeigen];
@@ -268,7 +268,7 @@ graph TD;
     ShowChatPage --> CloseWindow[Schließen des Fensters];
     CloseWindow --> Terminate[Terminieren];
 ```
-## Aktivitätsdiagramm Server
+### Aktivitätsdiagramm Server
 ```mermaid
 graph TD;
     Start((Start)) --> NachrichtEmpfangen[Nachricht empfangen];
