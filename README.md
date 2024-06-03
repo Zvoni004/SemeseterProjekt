@@ -24,7 +24,7 @@ Diese ChatApp Anwendung ermöglicht Benutzern Nachrichten in Echtzeit zu senden 
 
 Der WPF-Client bietet eine benutzerfreundliche Oberfläche für die Interaktion mit dem Server, einschließlich der Anzeige von Nachrichten, dem Senden von Textnachrichten, Bildern und Audiodateien sowie der Benutzerverwaltung. Wenn man den Client startet sieht man zuerst das Login Fenster mit der möglichkeit sich einzuloggen oder den Button für die Registrierung anzuklicken, erst wenn man sich angemeldet hat gelangt man in den eigentlichen Chat wo man die schon vorher genannten funktionen verwenden kann.
 
-## Aktivitätsdiagramm Chat
+## Aktivitätsdiagramm WPF-Client
 ```mermaid
 graph TD;
     Start[Start] --> LoginPage[LoginPage anzeigen];
